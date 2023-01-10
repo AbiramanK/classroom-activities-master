@@ -20,6 +20,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems } from "../../utilities/listItems";
 import Calculations from "./Calculations";
 import Avatar from "@mui/material/Avatar";
+import { OperationInput, OperationOutput, Title } from "../../components";
 
 function Copyright(props: any) {
   return (
@@ -92,7 +93,7 @@ const Drawer = styled(MuiDrawer, {
 const mdTheme = createTheme();
 
 function DashboardContent() {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -145,10 +146,11 @@ function DashboardContent() {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               px: [1],
             }}
           >
+            <Title titleProps={{ marginBottom: 0 }}>Classroom Activities</Title>
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
             </IconButton>
@@ -170,22 +172,18 @@ function DashboardContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              {/* Calculations */}
-              <Grid item xs={12} md={12} lg={12}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                >
-                  {/* <Calculations /> */}
-                </Paper>
+            <Grid container spacing={1}>
+              {/* Operation  */}
+              <Grid item xs={12} md={8} lg={8}>
+                <OperationInput />
+              </Grid>
+              <Grid item xs={12} md={4} lg={4}>
+                <OperationOutput />
               </Grid>
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Paper
+                  sx={{ mt: 1, p: 2, display: "flex", flexDirection: "column" }}
+                >
                   <Calculations />
                 </Paper>
               </Grid>

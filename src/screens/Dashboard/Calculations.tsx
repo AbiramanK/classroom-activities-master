@@ -60,7 +60,9 @@ export default function Calculations() {
             <TableRow key={row.id}>
               <TableCell>{row.date}</TableCell>
               <TableCell>{row.operationName}</TableCell>
-              <TableCell>{row.calculation}</TableCell>
+              <TableCell>
+                <code>{row.calculation}</code>
+              </TableCell>
               <TableCell align="right">{`${row.result}`}</TableCell>
             </TableRow>
           ))}
