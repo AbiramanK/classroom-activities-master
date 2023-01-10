@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Toolbar, IconButton, Typography, Badge, Avatar } from "@mui/material";
+import { Toolbar, IconButton, Typography, Badge } from "@mui/material";
 import {
   Menu as MenuIcon,
   Notifications as NotificationsIcon,
 } from "@mui/icons-material";
 import { MuiApplicationBar } from "./MuiApplicationBar";
+import { AccountMenu } from "../../components";
 
 export interface IApplicationBarProps {
   open?: boolean;
@@ -51,11 +52,7 @@ export default function ApplicationBar(props: IApplicationBarProps) {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <Typography sx={{ marginInline: 2 }}>Cindy Baker</Typography>
-          <Avatar
-            alt="Cindy Baker"
-            src="https://mui.com/static/images/avatar/3.jpg"
-          />
+          <AccountMenu />
         </Toolbar>
       </MuiApplicationBar>
     </React.Fragment>
