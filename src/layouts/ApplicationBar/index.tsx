@@ -18,7 +18,7 @@ export default function ApplicationBar(props: IApplicationBarProps) {
       <MuiApplicationBar
         position="absolute"
         open={props?.open}
-        drawerWidth={props?.drawerWidth}
+        drawerwidth={props?.drawerWidth}
       >
         <Toolbar
           sx={{

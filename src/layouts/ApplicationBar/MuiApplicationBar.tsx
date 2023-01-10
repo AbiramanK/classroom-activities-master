@@ -6,20 +6,20 @@ import {
 
 interface IMuiApplicationBarProps extends MuiAppBarProps {
   open?: boolean;
-  drawerWidth?: number;
+  drawerwidth?: number;
 }
 
 export const MuiApplicationBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})<IMuiApplicationBarProps>(({ theme, open, drawerWidth }) => ({
+})<IMuiApplicationBarProps>(({ theme, open, drawerwidth }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerwidth,
+    width: `calc(100% - ${drawerwidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -28,6 +28,6 @@ export const MuiApplicationBar = styled(MuiAppBar, {
 }));
 
 MuiApplicationBar.defaultProps = {
-  drawerWidth: 240,
+  drawerwidth: 240,
   open: false,
 };

@@ -6,16 +6,16 @@ import {
 
 interface MuiDrawerNavProps extends MuiDrawerProps {
   open?: boolean;
-  drawerWidth?: number;
+  drawerwidth?: number;
 }
 
 export const MuiDrawerNav = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
-})<MuiDrawerNavProps>(({ theme, open, drawerWidth }) => ({
+})<MuiDrawerNavProps>(({ theme, open, drawerwidth }) => ({
   "& .MuiDrawer-paper": {
     position: "relative",
     whiteSpace: "nowrap",
-    width: drawerWidth,
+    width: drawerwidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -37,5 +37,5 @@ export const MuiDrawerNav = styled(MuiDrawer, {
 
 MuiDrawerNav.defaultProps = {
   open: false,
-  drawerWidth: 240,
+  drawerwidth: 240,
 };

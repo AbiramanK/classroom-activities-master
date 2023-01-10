@@ -17,7 +17,7 @@ export default function DrawerNav(props: IDrawerNavProps) {
       <MuiDrawerNav
         variant="permanent"
         open={props?.open}
-        drawerWidth={props?.drawerWidth}
+        drawerwidth={props?.drawerWidth}
       >
         <Toolbar
           sx={{
