@@ -10,9 +10,13 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import { operandListItems } from "../utilities/listItems";
 
+interface ISplitButton {
+  handleMenuItemClick: Function;
+}
+
 const options = operandListItems;
 
-export default function SplitButton() {
+export default function SplitButton(props: ISplitButton) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedValue, setSelectedValue] = React.useState("");
@@ -25,6 +29,7 @@ export default function SplitButton() {
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     value: string
   ) => {
+    props?.handleMenuItemClick(value);
     setSelectedValue(value);
     setOpen(false);
   };
@@ -104,3 +109,7 @@ export default function SplitButton() {
     </React.Fragment>
   );
 }
+
+SplitButton.defaultProps = {
+  handleMenuItemClick: () => {},
+};

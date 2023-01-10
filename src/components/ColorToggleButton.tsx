@@ -1,18 +1,21 @@
 import * as React from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { OperandListInterface } from "../utilities/listItems";
 
 interface IColorToggleButton {
-  options: string[];
+  options: OperandListInterface[];
+  handleChange: Function;
 }
 
 export default function ColorToggleButton(props: IColorToggleButton) {
-  const [value, setValue] = React.useState("web");
+  const [value, setValue] = React.useState<string | undefined>(undefined);
 
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     newValue: string
   ) => {
+    props?.handleChange(newValue);
     setValue(newValue);
   };
 
@@ -27,10 +30,15 @@ export default function ColorToggleButton(props: IColorToggleButton) {
       size="small"
     >
       {props?.options?.map((operator) => (
-        <ToggleButton value={`${operator.toLocaleLowerCase()}`}>
-          {operator}
+        <ToggleButton key={`${operator?.value}`} value={`${operator?.value}`}>
+          {operator?.label}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
   );
 }
+
+ColorToggleButton.defaultProps = {
+  options: [],
+  handleChange: () => {},
+};

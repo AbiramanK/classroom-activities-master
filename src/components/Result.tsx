@@ -2,7 +2,7 @@ import * as React from "react";
 import OperationItemContainer from "./OperationItemContainer";
 
 export interface IResultProps {
-  result?: number;
+  result?: string;
 }
 
 export default function Result(props: IResultProps) {

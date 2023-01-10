@@ -4,6 +4,7 @@ import SplitButton from "./SplitButton";
 
 export interface IOperandProps {
   title: string;
+  handleMenuItemClick: Function;
 }
 
 export default function Operand(props: IOperandProps) {
@@ -11,8 +12,15 @@ export default function Operand(props: IOperandProps) {
     <React.Fragment>
       <OperationItemContainer
         title={props?.title}
-        operationItem={<SplitButton />}
+        operationItem={
+          <SplitButton handleMenuItemClick={props?.handleMenuItemClick} />
+        }
       />
     </React.Fragment>
   );
 }
+
+Operand.defaultProps = {
+  title: "Operand",
+  handleMenuItemClick: () => {},
+};

@@ -1,10 +1,11 @@
 import * as React from "react";
+import { operationExpression } from "../utilities/arithmeticOperations";
 import OperationItemContainer from "./OperationItemContainer";
 
 export interface IExpressionProps {
-  leftOperand?: string;
-  rightOperand?: string;
-  operator?: string;
+  leftOperand: string;
+  rightOperand: string;
+  operator: string;
 }
 
 export default function Expression(props: IExpressionProps) {
@@ -14,7 +15,11 @@ export default function Expression(props: IExpressionProps) {
         title={"Expression :"}
         operationItem={
           <code>
-            {props?.leftOperand}( {props?.operator}( {props?.rightOperand}() ) )
+            {operationExpression(
+              props?.leftOperand,
+              props?.rightOperand,
+              props?.operator
+            )}
           </code>
         }
         orientation={"vertical"}

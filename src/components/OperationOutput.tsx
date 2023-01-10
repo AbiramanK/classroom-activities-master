@@ -4,7 +4,12 @@ import Expression from "./Expression";
 import Result from "./Result";
 import OperationContainer from "./OperationContainer";
 
-export interface IOperationOutputProps {}
+export interface IOperationOutputProps {
+  leftOperand: string;
+  rightOperand: string;
+  operator: string;
+  result: string;
+}
 
 export default function OperationOutput(props: IOperationOutputProps) {
   return (
@@ -12,10 +17,14 @@ export default function OperationOutput(props: IOperationOutputProps) {
       <OperationContainer title="Output">
         <Grid container spacing={1}>
           <Grid item xs={12}>
-            <Expression />
+            <Expression
+              leftOperand={props?.leftOperand}
+              rightOperand={props?.rightOperand}
+              operator={props?.operator}
+            />
           </Grid>
           <Grid item xs={12}>
-            <Result />
+            <Result result={props?.result} />
           </Grid>
           <Grid item xs={12} textAlign={"center"}>
             <Button variant="contained">Submit</Button>
@@ -25,3 +34,10 @@ export default function OperationOutput(props: IOperationOutputProps) {
     </React.Fragment>
   );
 }
+
+OperationOutput.defaultProps = {
+  leftOperand: "______",
+  rightOperand: "______",
+  operator: "__________",
+  result: "-",
+};

@@ -39,9 +39,9 @@ export const operandListItems: OperandListInterface[] = [
   { value: "9", label: "Nine" },
 ];
 
-export const operatorListItems: string[] = [
-  "Addition",
-  "Subtraction",
-  "Multiplication",
-  "Division",
+export const operatorListItems: OperandListInterface[] = [
+  { value: "plus", label: "Addition" },
+  { value: "minus", label: "Subtraction" },
+  { value: "times", label: "Multiplication" },
+  { value: "divided_by", label: "Division" },
 ];

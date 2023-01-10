@@ -1,17 +1,59 @@
 import * as React from "react";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
+import { Container, Grid, Paper } from "@mui/material";
 import Calculations from "./Calculations";
 import { Copyright, OperationInput, OperationOutput } from "../../components";
 import { ApplicationBar, BaseLayout, DrawerNav, Main } from "../../layouts";
+import { operandListItems, operatorListItems } from "../../utilities/listItems";
+import {
+  evalOperationExpression,
+  operationExpression,
+} from "../../utilities/arithmeticOperations";
 
 const drawerWidth: number = 240;
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(false);
+  const [leftOperand, setLeftOperand] = React.useState<string | undefined>(
+    undefined
+  );
+  const [rightOperand, setRightOperand] = React.useState<string | undefined>(
+    undefined
+  );
+  const [operator, setOperator] = React.useState<string | undefined>(undefined);
+  const [result, setResult] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    if (leftOperand! && rightOperand! && operator!) {
+      const exp = operationExpression(
+        leftOperand?.toLocaleLowerCase(),
+        rightOperand?.toLocaleLowerCase(),
+        operator
+      );
+
+      setResult(evalOperationExpression(exp)!?.toString() ?? "∞");
+    }
+  }, [leftOperand, rightOperand, operator]);
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  const handleLeftOperandChnage = (value: string) => {
+    setLeftOperand(
+      operandListItems.find((operand) => operand?.value === value)?.label!
+    );
+  };
+
+  const handleRightOperandChnage = (value: string) => {
+    setRightOperand(
+      operandListItems.find((operand) => operand?.value === value)?.label!
+    );
+  };
+
+  const handleOperatorChnage = (value: string) => {
+    setOperator(
+      operatorListItems?.find((operator) => operator?.value === value)?.value!
+    );
   };
 
   return (
@@ -31,10 +73,19 @@ function DashboardContent() {
           <Grid container spacing={1}>
             {/* Operation  */}
             <Grid item xs={12} md={8} lg={8}>
-              <OperationInput />
+              <OperationInput
+                handleLeftOperandChnage={handleLeftOperandChnage}
+                handleRightOperandChnage={handleRightOperandChnage}
+                handleOperatorChnage={handleOperatorChnage}
+              />
             </Grid>
             <Grid item xs={12} md={4} lg={4}>
-              <OperationOutput />
+              <OperationOutput
+                leftOperand={leftOperand}
+                rightOperand={rightOperand}
+                operator={operator}
+                result={result}
+              />
             </Grid>
             <Grid item xs={12}>
               <Paper

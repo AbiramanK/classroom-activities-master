@@ -31,5 +31,7 @@ export default function OperationItemContainer(
 }
 
 OperationItemContainer.defaultProps = {
+  title: "Operation Item",
+  operationItem: <></>,
   orientation: "horizontal",
 };
