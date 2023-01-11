@@ -13,7 +13,11 @@ import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import AlertDialogSlide from "./AlertDialogSlide";
 
-export default function AccountMenu() {
+export interface IAccountMenu {
+  handleConfirmation: Function;
+}
+
+export default function AccountMenu(props: IAccountMenu) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] =
     React.useState<boolean>(false);
@@ -31,6 +35,7 @@ export default function AccountMenu() {
 
   const handleLogoutDialogConfirm = () => {
     handleLogoutDialogClose();
+    props?.handleConfirmation();
   };
   const handleLogoutDialogClose = () => {
     setLogoutDialogOpen(false);
@@ -131,3 +136,7 @@ export default function AccountMenu() {
     </React.Fragment>
   );
 }
+
+AccountMenu.defaultProps = {
+  handleConfirmation: () => {},
+};

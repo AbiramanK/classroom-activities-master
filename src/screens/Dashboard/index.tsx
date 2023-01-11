@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Container, Grid, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import Calculations from "./Calculations";
 import { Copyright, OperationInput, OperationOutput } from "../../components";
 import { ApplicationBar, BaseLayout, DrawerNav, Main } from "../../layouts";
@@ -8,10 +9,14 @@ import {
   evalOperationExpression,
   operationExpression,
 } from "../../utilities/arithmeticOperations";
+import { useAuth } from "../../RootRouter";
 
 const drawerWidth: number = 240;
 
 function DashboardContent() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const [open, setOpen] = React.useState(false);
   const [leftOperand, setLeftOperand] = React.useState<string | undefined>(
     undefined
@@ -56,12 +61,17 @@ function DashboardContent() {
     );
   };
 
+  const logout = () => {
+    auth.signout(() => navigate("/"));
+  };
+
   return (
     <BaseLayout>
       <ApplicationBar
         open={open}
         drawerWidth={drawerWidth}
         toggleDrawer={toggleDrawer}
+        logout={logout}
       />
       <DrawerNav
         open={open}
