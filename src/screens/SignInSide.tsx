@@ -46,8 +46,6 @@ export default function SignInSide() {
           },
         },
       });
-
-      enqueueSnackbar("Logged in successfully", { variant: "success" });
     } else {
       enqueueSnackbar("Please, fill all the required fields", {
         variant: "info",
@@ -60,6 +58,7 @@ export default function SignInSide() {
   }
 
   if (data! && !auth?.user) {
+    enqueueSnackbar("Logged in successfully", { variant: "success" });
     auth.signin(data!?.login!, () => {
       navigate(from, { replace: true });
     });
