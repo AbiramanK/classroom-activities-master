@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { fakeAuthProvider } from "./auth";
+import { AuthenticationOutput } from "./graphql-codegen/graphql";
 import { Dashboard, SignInSide, SignUpSide } from "./screens";
 
 export default function RootRouter() {
@@ -26,18 +27,26 @@ export default function RootRouter() {
 
 interface AuthContextType {
   user: any;
-  signin: (user: string, callback: VoidFunction) => void;
+  signin: (user: AuthenticationOutput, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
 }
 
 let AuthContext = React.createContext<AuthContextType>(null!);
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
-  let [user, setUser] = React.useState<any>(null);
+  let [user, setUser] = React.useState<AuthenticationOutput | null>(null);
 
-  let signin = (newUser: string, callback: VoidFunction) => {
+  let localUser = localStorage.getItem("user")! ?? "";
+
+  if (localUser.trim() !== "" && user === null) {
+    const userObj = JSON.parse(localUser);
+    setUser(userObj);
+  }
+
+  let signin = (newUser: AuthenticationOutput, callback: VoidFunction) => {
     return fakeAuthProvider.signin(() => {
       setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
       callback();
     });
   };
@@ -45,6 +54,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   let signout = (callback: VoidFunction) => {
     return fakeAuthProvider.signout(() => {
       setUser(null);
+      localStorage.clear();
       callback();
     });
   };

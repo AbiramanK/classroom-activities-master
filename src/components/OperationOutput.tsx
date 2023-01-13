@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Button, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import Expression from "./Expression";
 import Result from "./Result";
 import OperationContainer from "./OperationContainer";
@@ -9,6 +10,9 @@ export interface IOperationOutputProps {
   rightOperand: string;
   operator: string;
   result: string;
+  submitCalculation: Function;
+  submitButtonDisabled: boolean;
+  loading: boolean;
 }
 
 export default function OperationOutput(props: IOperationOutputProps) {
@@ -27,7 +31,14 @@ export default function OperationOutput(props: IOperationOutputProps) {
             <Result result={props?.result} />
           </Grid>
           <Grid item xs={12} textAlign={"center"}>
-            <Button variant="contained">Submit</Button>
+            <LoadingButton
+              onClick={() => props?.submitCalculation()}
+              variant="contained"
+              disabled={props?.submitButtonDisabled}
+              loading={props?.loading}
+            >
+              <span>Submit</span>
+            </LoadingButton>
           </Grid>
         </Grid>
       </OperationContainer>
@@ -40,4 +51,7 @@ OperationOutput.defaultProps = {
   rightOperand: "______",
   operator: "__________",
   result: "-",
+  submitCalculation: () => {},
+  submitButtonDisabled: true,
+  loading: false,
 };

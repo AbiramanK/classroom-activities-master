@@ -1,6 +1,6 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import { LoadingButton } from "@mui/lab";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -15,10 +15,15 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../RootRouter";
 import { Copyright } from "../components";
+import { useRegisterMutation } from "../graphql-codegen/graphql";
+import { useSnackbar } from "notistack";
 
 const theme = createTheme();
 
 export default function SignUpSide() {
+  const [register, { data, loading, error }] = useRegisterMutation();
+
+  let { enqueueSnackbar } = useSnackbar();
   let navigate = useNavigate();
   let location = useLocation();
   let auth = useAuth();
@@ -27,18 +32,53 @@ export default function SignUpSide() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const formData = new FormData(event.currentTarget);
 
-    let email = data?.get("email") as string;
+    let firstName = formData?.get("firstName") as string;
+    let lastName = formData?.get("lastName") as string;
+    let email = formData?.get("email") as string;
+    let password = formData?.get("password") as string;
 
-    auth.signin(email, () => {
+    if (
+      firstName.trim() !== "" &&
+      lastName.trim() !== "" &&
+      email.trim() !== "" &&
+      password.trim() !== ""
+    ) {
+      register({
+        variables: {
+          input: {
+            firstName,
+            lastName,
+            email,
+            password,
+            type: "master",
+          },
+        },
+      });
+      enqueueSnackbar("User registered successfully", { variant: "success" });
+    } else {
+      enqueueSnackbar("Please fill all the required fields", {
+        variant: "info",
+      });
+    }
+  };
+
+  if (error) {
+    enqueueSnackbar(error?.message, { variant: "error" });
+  }
+
+  if (data!) {
+    auth.signin(data!?.register!, () => {
       navigate(from, { replace: true });
     });
-  };
+  }
+
+  if (data?.register!) {
+    auth.signin(data?.register!, () => {
+      navigate(from, { replace: true });
+    });
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -122,14 +162,15 @@ export default function SignUpSide() {
                   />
                 </Grid>
               </Grid>
-              <Button
+              <LoadingButton
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                loading={loading}
               >
-                Sign Up
-              </Button>
+                <span>Sign Up</span>
+              </LoadingButton>
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   <Link href="/signin" variant="body2">

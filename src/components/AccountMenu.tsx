@@ -15,6 +15,8 @@ import AlertDialogSlide from "./AlertDialogSlide";
 
 export interface IAccountMenu {
   handleConfirmation: Function;
+  firstName: string;
+  lastName: string;
 }
 
 export default function AccountMenu(props: IAccountMenu) {
@@ -50,7 +52,9 @@ export default function AccountMenu(props: IAccountMenu) {
           ml: 2,
         }}
       >
-        <Typography sx={{ minWidth: 100 }}>Cindy Baker</Typography>
+        <Typography
+          sx={{ minWidth: 100 }}
+        >{`${props?.firstName} ${props?.lastName}`}</Typography>
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -61,7 +65,9 @@ export default function AccountMenu(props: IAccountMenu) {
             aria-expanded={open ? "true" : undefined}
           >
             <Avatar>
-              <Typography>CB</Typography>
+              <Typography>{`${props?.firstName![0] ?? ""}${
+                props?.lastName![0] ?? ""
+              }`}</Typography>
             </Avatar>
           </IconButton>
         </Tooltip>
@@ -139,4 +145,6 @@ export default function AccountMenu(props: IAccountMenu) {
 
 AccountMenu.defaultProps = {
   handleConfirmation: () => {},
+  firstName: "FirstName",
+  lastName: "LastName",
 };

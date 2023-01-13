@@ -1,48 +1,29 @@
 import * as React from "react";
-import Link from "@mui/material/Link";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Title } from "../../components";
+import { CalculationModel } from "../../graphql-codegen/graphql";
+import { Button, Grid, LinearProgress, Typography } from "@mui/material";
+import { operatorListItems } from "../../utilities/listItems";
+import moment from "moment";
 
-// Generate Calculation Data
-function createData(
-  id: number,
-  date: string,
-  name: string,
-  calculation: string,
-  result: number
-) {
-  return { id, date, operationName: name, calculation, result };
+interface ICalculations {
+  calculations: CalculationModel[];
+  loading: boolean;
+  fetchMore: Function;
+  hasMore: boolean;
 }
 
-const rows = [
-  createData(
-    0,
-    "16 Mar, 2019",
-    "Division",
-    "eight( divided_by( three() ) )",
-    2
-  ),
-  createData(
-    1,
-    "16 Mar, 2019",
-    "Multiplication",
-    "seven( times( five() ) )",
-    35
-  ),
-  createData(2, "16 Mar, 2019", "Subtraction", "eight( minus( three() ) )", 5),
-  createData(3, "16 Mar, 2019", "Division", "six( divided_by( two() ) )", 3),
-  createData(4, "15 Mar, 2019", "Addition", "one( plus( four() ) )", 5),
-];
-
-function preventDefault(event: React.MouseEvent) {
-  event.preventDefault();
-}
-
-export default function Calculations() {
+export default function Calculations(props: ICalculations) {
+  function preventDefault(event: React.MouseEvent) {
+    event.preventDefault();
+    if (props?.hasMore) {
+      props?.fetchMore();
+    }
+  }
   return (
     <React.Fragment>
       <Title>Recent Calculations</Title>
@@ -56,21 +37,75 @@ export default function Calculations() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {props?.calculations?.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.operationName}</TableCell>
+              <TableCell>{moment(row?.updated_at!).format("ll")}</TableCell>
               <TableCell>
-                <code>{row.calculation}</code>
+                {
+                  operatorListItems?.find(
+                    (operator) => operator?.value === row?.operation_name
+                  )!?.label!
+                }
               </TableCell>
-              <TableCell align="right">{`${row.result}`}</TableCell>
+              <TableCell>
+                <code>{row?.expression}</code>
+              </TableCell>
+              <TableCell align="right">{`${row?.result}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more calculations
-      </Link>
+      {props?.loading && (
+        <Grid
+          container
+          justifyContent={"center"}
+          alignItems={"center"}
+          sx={{ mt: 2 }}
+          spacing={1}
+        >
+          <Grid item xs={12} md={12}>
+            <Typography sx={{ textAlign: "center" }}>Loading...</Typography>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <LinearProgress />
+          </Grid>
+        </Grid>
+      )}
+
+      {!props?.loading && props?.calculations?.length === 0 && (
+        <Grid
+          container
+          justifyContent={"center"}
+          alignItems={"center"}
+          sx={{ mt: 2 }}
+          spacing={1}
+        >
+          <Grid item xs={12} md={12}>
+            <Typography sx={{ textAlign: "center" }}>
+              Calculations not availabe
+            </Typography>
+          </Grid>
+        </Grid>
+      )}
+      <Grid container spacing={1} sx={{ mt: 3 }}>
+        <Grid item xs={12}>
+          <Button
+            color="primary"
+            onClick={preventDefault}
+            sx={{ fontSize: 15 }}
+            disabled={!props?.hasMore}
+          >
+            See more calculations
+          </Button>
+        </Grid>
+      </Grid>
     </React.Fragment>
   );
 }
+
+Calculations.defaultProps = {
+  calculations: [],
+  loading: true,
+  fetchMore: () => {},
+  hasMore: false,
+};

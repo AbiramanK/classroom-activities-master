@@ -12,6 +12,8 @@ export interface IApplicationBarProps {
   drawerWidth?: number;
   toggleDrawer: Function;
   logout: Function;
+  firstName: string;
+  lastName: string;
 }
 
 export default function ApplicationBar(props: IApplicationBarProps) {
@@ -57,7 +59,11 @@ export default function ApplicationBar(props: IApplicationBarProps) {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <AccountMenu handleConfirmation={handleConfirmation} />
+          <AccountMenu
+            handleConfirmation={handleConfirmation}
+            firstName={props?.firstName!}
+            lastName={props?.lastName!}
+          />
         </Toolbar>
       </MuiApplicationBar>
     </React.Fragment>
@@ -69,4 +75,6 @@ ApplicationBar.defaultProps = {
   open: false,
   toggleDrawer: () => {},
   logout: () => {},
+  firstName: "FirstName",
+  lastName: "LastName",
 };
