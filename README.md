@@ -1,3 +1,6 @@
+# Classroom Activities
+ It's provides easy solution for classroom activities for both Master and Students. Master can create a activity and post it in calssroom by master portel then Students can access those activities from classroom by student portal. We also provide white board with basic arithmetic operations for Master. Student can see all the posts posted by the Master in activity logs.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
