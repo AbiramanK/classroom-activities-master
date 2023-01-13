@@ -32,6 +32,7 @@ export default function Calculations(props: ICalculations) {
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
+            {props?.type === "student" && <TableCell>Master</TableCell>}
             <TableCell>Operation Name</TableCell>
             <TableCell>Calculation</TableCell>
             <TableCell align="right">Result</TableCell>
@@ -41,6 +42,9 @@ export default function Calculations(props: ICalculations) {
           {props?.calculations?.map((row) => (
             <TableRow key={row.id}>
               <TableCell>{moment(row?.updated_at!).format("ll")}</TableCell>
+              {props?.type === "student" && (
+                <TableCell>{`${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`}</TableCell>
+              )}
               <TableCell>
                 {
                   operatorListItems?.find(
