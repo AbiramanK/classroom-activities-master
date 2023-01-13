@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Container, Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { gql, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import Calculations from "./Calculations";
 import { Copyright, OperationInput, OperationOutput } from "../../components";
 import { ApplicationBar, BaseLayout, DrawerNav, Main } from "../../layouts";
@@ -12,23 +12,15 @@ import {
 } from "../../utilities/arithmeticOperations";
 import { useAuth } from "../../RootRouter";
 import {
-  useGet_CalculationsLazyQuery,
+  useGet_CalculationsQuery,
   usePost_CalculationMutation,
 } from "../../graphql-codegen/graphql";
 import { useSnackbar } from "notistack";
-import moment from "moment";
 
 const drawerWidth: number = 240;
-const calculationsLimit: number = 5;
 
 function DashboardContent() {
   const client = useApolloClient();
-
-  const [postCalculation, postCalculationResult] =
-    usePost_CalculationMutation();
-
-  const [getCalculations, { data, loading, error, fetchMore }] =
-    useGet_CalculationsLazyQuery();
 
   const { enqueueSnackbar } = useSnackbar();
   const auth = useAuth();
@@ -48,29 +40,13 @@ function DashboardContent() {
   );
   const [submitButtonDisabled, setSubmitButtonDisable] =
     React.useState<boolean>(true);
+  const [calculationsLimit, setCalculationsLimit] = React.useState<number>(5);
 
   React.useEffect(() => {
-    getCalculations({
-      variables: {
-        input: {
-          limit: calculationsLimit,
-          cursor: 0,
-        },
-      },
-    });
-  });
-
-  const fetchCalculations = () => {
-    getCalculations({
-      variables: {
-        input: {
-          limit: calculationsLimit,
-          cursor: 0,
-        },
-      },
-      fetchPolicy: "no-cache",
-    });
-  };
+    if (auth!?.user?.type === "student") {
+      setCalculationsLimit(15);
+    }
+  }, []);
 
   React.useEffect(() => {
     if (leftOperand! && rightOperand! && operator!) {
@@ -89,6 +65,18 @@ function DashboardContent() {
       setResult(undefined);
     }
   }, [leftOperand, rightOperand, operator]);
+
+  const [postCalculation, postCalculationResult] =
+    usePost_CalculationMutation();
+
+  const { data, loading, error, fetchMore } = useGet_CalculationsQuery({
+    variables: {
+      input: {
+        cursor: 0,
+        limit: calculationsLimit,
+      },
+    },
+  });
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -117,6 +105,7 @@ function DashboardContent() {
   };
 
   const logout = () => {
+    client?.clearStore();
     auth.signout(() => navigate("/"));
   };
 
@@ -130,104 +119,21 @@ function DashboardContent() {
             result: result!,
           },
         },
-      });
-
-      const now = moment();
-
-      const newCalculation = {
-        id: data!?.get_calculations?.edgeds[0]?.id + 1,
-        operation_name: operator,
-        expression: expression,
-        result: result,
-        created_at: now,
-        updated_at: now,
-        deleted_at: null,
-        posted_by: {
-          id: 1,
-          first_name: "Abiraman",
-          last_name: "K",
-          email: "abiramancit@gmail.com",
-          type: "master",
-          created_at: now,
-          updated_at: now,
-          deleted_at: null,
-          __typename: "UserModel",
-        },
-        updated_by: {
-          id: 1,
-          first_name: "Abiraman",
-          last_name: "K",
-          email: "abiramancit@gmail.com",
-          type: "master",
-          created_at: now,
-          updated_at: now,
-          deleted_at: null,
-          __typename: "UserModel",
-        },
-        deleted_by: null,
-        __typename: "CalculationModel",
-      };
-
-      client?.cache?.modify({
-        id: client?.cache?.identify({ __typename: "CalculationModel" }),
-        fields: {
-          calculations(existingCalculationRef, { readField }) {
-            const newCalculationRef = client?.cache?.writeFragment({
-              data: newCalculation,
-              fragment: gql`
-                fragment NewCalulation on CalculationModel {
-                  id
-                  operation_name
-                  expression
-                  result
-                  created_at
-                  updated_at
-                  deleted_at
-                  posted_by {
-                    id
-                    first_name
-                    last_name
-                    email
-                    type
-                    created_at
-                    updated_at
-                    deleted_at
-                    __typename
-                  }
-                  updated_by {
-                    id
-                    first_name
-                    last_name
-                    email
-                    type
-                    created_at
-                    updated_at
-                    deleted_at
-                    __typename
-                  }
-                  deleted_by
-                }
-              `,
-            });
-
-            if (
-              existingCalculationRef.some(
-                (ref: any) => readField("id", ref) === newCalculation.id
-              )
-            ) {
-              return existingCalculationRef;
-            }
-
-            return [newCalculationRef, ...existingCalculationRef];
-          },
+        update: (cache, { data }) => {
+          const cacheId = cache?.identify(data?.post_calculation!);
+          cache.modify({
+            fields: {
+              get_calculations: (existingFieldData, { toReference }) => {
+                return [...existingFieldData?.edgeds, toReference(cacheId!)];
+              },
+            },
+          });
         },
       });
 
       enqueueSnackbar("Calculation posted successfully", {
         variant: "success",
       });
-
-      fetchCalculations();
     }
   };
 
@@ -237,9 +143,13 @@ function DashboardContent() {
     });
   }
 
+  if (postCalculationResult?.data!) {
+  }
+
   const fetchMoreCalculations = () => {
     const cursor = data?.get_calculations?.pageInfo?.cursor;
     const hasMore = data?.get_calculations?.pageInfo?.hasMore;
+
     if (cursor! && hasMore) {
       fetchMore({
         variables: {
@@ -272,26 +182,30 @@ function DashboardContent() {
       />
       <Main>
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={1}>
-            {/* Operation  */}
-            <Grid item xs={12} md={8} lg={8}>
-              <OperationInput
-                handleLeftOperandChnage={handleLeftOperandChnage}
-                handleRightOperandChnage={handleRightOperandChnage}
-                handleOperatorChnage={handleOperatorChnage}
-              />
+          {auth!?.user?.type === "master" && (
+            <Grid container spacing={1}>
+              {/* Operation  */}
+              <Grid item xs={12} md={8} lg={8}>
+                <OperationInput
+                  handleLeftOperandChnage={handleLeftOperandChnage}
+                  handleRightOperandChnage={handleRightOperandChnage}
+                  handleOperatorChnage={handleOperatorChnage}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} lg={4}>
+                <OperationOutput
+                  leftOperand={leftOperand}
+                  rightOperand={rightOperand}
+                  operator={operator}
+                  result={result}
+                  submitCalculation={submitCalculation}
+                  submitButtonDisabled={submitButtonDisabled}
+                  loading={postCalculationResult?.loading}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4} lg={4}>
-              <OperationOutput
-                leftOperand={leftOperand}
-                rightOperand={rightOperand}
-                operator={operator}
-                result={result}
-                submitCalculation={submitCalculation}
-                submitButtonDisabled={submitButtonDisabled}
-                loading={postCalculationResult?.loading}
-              />
-            </Grid>
+          )}
+          <Grid container spacing={1} sx={{ mt: 1 }}>
             <Grid item xs={12}>
               <Paper
                 sx={{ mt: 1, p: 2, display: "flex", flexDirection: "column" }}
@@ -301,6 +215,7 @@ function DashboardContent() {
                   loading={loading}
                   fetchMore={fetchMoreCalculations}
                   hasMore={data?.get_calculations?.pageInfo?.hasMore}
+                  type={auth!?.user?.type!}
                 />
               </Paper>
             </Grid>

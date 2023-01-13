@@ -15,6 +15,7 @@ interface ICalculations {
   loading: boolean;
   fetchMore: Function;
   hasMore: boolean;
+  type: string;
 }
 
 export default function Calculations(props: ICalculations) {
@@ -26,7 +27,7 @@ export default function Calculations(props: ICalculations) {
   }
   return (
     <React.Fragment>
-      <Title>Recent Calculations</Title>
+      <Title>{props?.type === "master" ? "Recent " : ""}Calculations</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -108,4 +109,5 @@ Calculations.defaultProps = {
   loading: true,
   fetchMore: () => {},
   hasMore: false,
+  type: "master",
 };
