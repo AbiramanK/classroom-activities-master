@@ -17,6 +17,13 @@ import { useAuth } from "../RootRouter";
 import { Copyright } from "../components";
 import { useRegisterMutation } from "../graphql-codegen/graphql";
 import { useSnackbar } from "notistack";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 const theme = createTheme();
 
@@ -28,6 +35,12 @@ export default function SignUpSide() {
   let location = useLocation();
   let auth = useAuth();
 
+  const [designation, setDesignation] = React.useState("");
+
+  const handleDesignationChange = (event: SelectChangeEvent) => {
+    setDesignation(event.target.value as string);
+  };
+
   let from = location.state?.from?.pathname || "/";
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -38,12 +51,14 @@ export default function SignUpSide() {
     let lastName = formData?.get("lastName") as string;
     let email = formData?.get("email") as string;
     let password = formData?.get("password") as string;
+    let designation = formData?.get("designation") as string;
 
     if (
       firstName.trim() !== "" &&
       lastName.trim() !== "" &&
       email.trim() !== "" &&
-      password.trim() !== ""
+      password.trim() !== "" &&
+      designation.trim() !== ""
     ) {
       register({
         variables: {
@@ -52,11 +67,10 @@ export default function SignUpSide() {
             lastName,
             email,
             password,
-            type: "master",
+            type: designation,
           },
         },
       });
-      enqueueSnackbar("User registered successfully", { variant: "success" });
     } else {
       enqueueSnackbar("Please fill all the required fields", {
         variant: "info",
@@ -68,7 +82,8 @@ export default function SignUpSide() {
     enqueueSnackbar(error?.message, { variant: "error" });
   }
 
-  if (data!) {
+  if (data! && !auth?.user) {
+    enqueueSnackbar("User registered successfully", { variant: "success" });
     auth.signin(data!?.register!, () => {
       navigate(from, { replace: true });
     });
@@ -152,6 +167,25 @@ export default function SignUpSide() {
                     id="password"
                     autoComplete="new-password"
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="designation-label">
+                      Designnation *
+                    </InputLabel>
+                    <Select
+                      required
+                      labelId="designation-label"
+                      id="designation"
+                      value={designation}
+                      label="Designation"
+                      name="designation"
+                      onChange={handleDesignationChange}
+                    >
+                      <MenuItem value={"master"}>Master</MenuItem>
+                      <MenuItem value={"student"}>Student</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={12}>
                   <FormControlLabel
